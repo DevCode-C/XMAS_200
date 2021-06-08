@@ -8,6 +8,7 @@
 #include "string.h"
 #include "stm32f0xx_hal.h"
 #include "funciones.h"
+#include "ctype.h"
 
 /**------------------------------------------------------------------------------------------------
 Brief.- Punto de entrada del programa
@@ -37,7 +38,7 @@ __IO HAL_StatusTypeDef flag_String = HAL_BUSY;
 
 
 uint8_t RxByte;
-uint8_t RxBuffer[20];
+uint8_t RxBuffer[30];
 uint32_t tickTimer; 
 uint16_t timer = 100;
 uint16_t timer_temp = 0;
@@ -79,8 +80,19 @@ int main( void )
                 }
                 if (flag_String == HAL_OK)
                 {
+                    for (uint8_t i = 0; i < strlen_p(RxBuffer)-1; i++)
+                    {
+                        if (!isdigit(RxBuffer[i]))
+                        {
+                            timer_temp = 1;
+                            break;
+                        }
+                        else
+                        {
+                            timer_temp = atoi((const char *)RxBuffer);
+                        }
+                    }
                     
-                    timer_temp = atoi((const char *)RxBuffer);
                     if (timer_temp > 99 && timer_temp < 1001)
                     {
                         timer = timer_temp;
