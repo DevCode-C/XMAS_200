@@ -40,6 +40,7 @@ uint8_t RxByte;
 uint8_t RxBuffer[20];
 uint32_t tickTimer; 
 uint16_t timer = 100;
+uint16_t timer_temp = 0;
 uint8_t function_list = 5;
 
 void UART_Init(void);
@@ -72,12 +73,25 @@ int main( void )
                     else
                     {
                         flag_String = HAL_ERROR;
+                        function_list = 5;
                     }
                     
                 }
                 if (flag_String == HAL_OK)
                 {
-                    HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)RxBuffer,strlen_p(RxBuffer));
+                    
+                    timer_temp = atoi((const char *)RxBuffer);
+                    if (timer_temp > 99 && timer_temp < 1001)
+                    {
+                        timer = timer_temp;
+                        HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)msgOk,strlen_p(msgOk));
+                    }
+                    else
+                    {
+                        HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)msgError,strlen_p(msgError));
+                        function_list = 5;
+                        timer = 100;
+                    }
                 }
                 else
                 {
@@ -89,6 +103,7 @@ int main( void )
             else
             {
                 HAL_UART_Transmit_IT(&UartHandle,(uint8_t*)msgError,strlen_p(msgError));
+                function_list = 5;
             }
             
             
